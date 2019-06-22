@@ -2,9 +2,11 @@ package atlan.ceer;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,8 +71,15 @@ public class UserLogin extends HttpServlet {
 			if(phone!="") {
 				username=webDao.FindUsername(phone);
 			}
-			HttpSession session=request.getSession();
+			HttpSession session=request.getSession();//session实现关闭浏览器就需要重新登录
 			session.setAttribute("username", username);
+			
+			Cookie name = new Cookie("username",
+	                URLEncoder.encode(username, "UTF-8")); // 中文转码
+			//设置cookie过期时间为三天
+			name.setMaxAge(60*60*24*3); //设置过期时间（秒为单位）一天：60*60*24
+	        response.addCookie(name);//响应头中添加cookie
+	        
 			//response.sendRedirect(request.getContextPath()+"/test.jsp");
 			out.print("<script>alert('"+username+" 欢迎您');window.location='index.jsp'</script>");
 			//out.print("<script>success();</script>");

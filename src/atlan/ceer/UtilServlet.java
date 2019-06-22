@@ -2,13 +2,16 @@ package atlan.ceer;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.websocket.Session;
 
 import org.json.JSONArray;
@@ -16,7 +19,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
+/**
+ * 用来处理多种请求
+ */
 
 /**
  * Servlet implementation class UtilServlet
@@ -81,6 +86,15 @@ public class UtilServlet extends HttpServlet {
 					e.printStackTrace();
 				}
 		}else if(method.equals("2")) {//退出登录
+			Cookie[] cookies = request.getCookies();//获取所有cookies
+			if (cookies != null) {
+	            for (Cookie cookie : cookies) {
+	                if (URLDecoder.decode(cookie.getName(), "utf-8").equals("username")) { // 将用户名清除
+	                    cookie.setMaxAge(0);//通过设置有效时间清除登录时间
+	                    response.addCookie(cookie);
+	                }
+	            }
+	        }
 			request.getSession().invalidate();
 			//out.print("<script>alert('欢迎您')</script>");
 			//response.sendRedirect("test.jsp");
@@ -119,8 +133,27 @@ public class UtilServlet extends HttpServlet {
 				}
 			}
 			out.print("<script>alert('修改导航成功');</script>");
+		}else if(method.equals("0")){//判断是否需要登录
+			boolean judge=false;//判断是否重新登录
+			Cookie[] cookies = request.getCookies();//获取所有cookies
+			if (cookies != null) {
+				//System.out.println("in");
+	            for (Cookie cookie : cookies) {
+	                if (URLDecoder.decode(cookie.getName(), "utf-8").equals("username")) { // 检查是否有用户信息
+	                	String username=URLDecoder.decode(cookie.getValue(), "utf-8");
+	                	HttpSession session=request.getSession();
+	        			session.setAttribute("username", username);
+	        			//System.out.println("用户重新登录成功"+username);
+	        			judge=true;
+	                }
+	            }
+	            if(!judge) {//如果没有重新登录成功
+	            	response.setStatus(201);//设置响应码
+	            }
+	        }
+			//System.out.println("out");
 		}else {
-			out.print("<script>alert('请求错误');");
+			out.print("<script>alert('请求参数错误');");
 		}
 	}
 

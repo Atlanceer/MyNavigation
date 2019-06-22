@@ -66,6 +66,33 @@ function loadXMLDoc(str)
 		  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		  xmlhttp.send("username="+str+"&method=1");
 }
+function relogin(){
+	var str="<%=session.getAttribute("username") %>";
+	if(str==null||str==""||str=="null"){
+		//alert("没有用户"+str);
+		var xmlhttp;
+		if (window.XMLHttpRequest)
+		  {
+			xmlhttp=new XMLHttpRequest();
+		  }
+		  else
+		  {
+			  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+			xmlhttp.onreadystatechange=function()
+		  {
+		    if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		    {
+		    	window.location.href="index.jsp";
+		    }
+		  }
+		  xmlhttp.open("POST","UtilServlet",true);
+		  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		  xmlhttp.send("method=0");
+	}else{
+		//alert("用户已经登录"+str);
+	}
+}
 function logout(){
 	var xmlhttp;
 	if (window.XMLHttpRequest)
@@ -91,7 +118,7 @@ function logout(){
 }
 </script>
 </head>
-<body background="pictures/season0.jpg" id="body" class="content">
+<body background="pictures/season0.jpg" id="body" class="content" onload="relogin()">
 <%! 
 	Object username;// JSP片段中定义变量
 %>
