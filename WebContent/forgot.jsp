@@ -10,7 +10,7 @@
     <title>找回密码</title>
     <meta name="keywords" content="">
     <meta name="description" content="">
-    <link href="login.css" rel="stylesheet">
+    <link href="css/login.css" rel="stylesheet">
     <script>
         if (window.top !== window.self) {
             window.top.location = window.location;

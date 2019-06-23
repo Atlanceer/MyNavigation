@@ -10,7 +10,8 @@
     <title>修改导航</title>
     <meta name="keywords" content="">
     <meta name="description" content="">
-    <link href="navigation.css" rel="stylesheet">
+    <link href="css/navigation.css" rel="stylesheet">
+    <link href="css/button.css" rel="stylesheet">
     <script>
         if (window.top !== window.self) {
             window.top.location = window.location;
@@ -55,8 +56,8 @@
             <div class="col-sm-12">
 
             <form method="post" class="m-t" role="form" action="UtilServlet" target="nm_iframe">
-                <h4 class="no-margins">修改导航信息</h4>
-                    <p class="m-t-md">修改后请确认提交</p>
+                <h4 class="no-margins">修改导航信息,修改后请确认提交</h4>
+                    <small>格式：www.baidu.com (不用添加前面的http://)</small>
         		<div>
         			<div class="form-group">
 	                    <input type="text" id="10w" class="form-control" placeholder="网站10名称" name="webname10" style="float: left;">
@@ -158,12 +159,20 @@
 	                <div class="form-group">
 	                    <input type="text" style="display: none;" name="method" value="4">
 	                </div>
-                
+               <!--  
                 <button type="submit" class="btn btn-primary block full-width m-b" >确认修改</button>
                 
-                <p class="text-muted text-center"><a href="index.jsp"><small>去导航页</small></a>
-                </p>
-
+                <p class="text-muted text-center"><a href="index.jsp"><button><small>去导航页</small></button></a>
+                </p> -->
+                </br>
+                </br>
+                <div style="text-align:center">
+                <ul class="button-group">
+				<li><button type="submit" class="small button" >确认修改</button></li>
+				<li><a href="index.jsp" class="small button">去导航页</a></li>
+				</ul>
+				</div>
+			
             </form>
             <iframe id="id_iframe" name="nm_iframe" style="display:none;"></iframe> 
             </div>

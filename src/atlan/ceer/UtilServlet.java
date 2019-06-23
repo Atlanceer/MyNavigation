@@ -1,6 +1,10 @@
 package atlan.ceer;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.util.List;
@@ -64,10 +68,29 @@ public class UtilServlet extends HttpServlet {
 		PrintWriter out=response.getWriter(); 
 		String method=request.getParameter("method");
 		
-		if(method.equals("1")) {//查询导航信息
+		if(method.equals("0")){//判断是否需要登录
+			boolean judge=false;//判断是否重新登录
+			Cookie[] cookies = request.getCookies();//获取所有cookies
+			if (cookies != null) {
+				//System.out.println("in");
+	            for (Cookie cookie : cookies) {
+	                if (URLDecoder.decode(cookie.getName(), "utf-8").equals("username")) { // 检查是否有用户信息
+	                	String username=URLDecoder.decode(cookie.getValue(), "utf-8");
+	                	HttpSession session=request.getSession();
+	        			session.setAttribute("username", username);
+	        			//System.out.println("用户重新登录成功"+username);
+	        			judge=true;
+	                }
+	            }
+	            if(!judge) {//如果没有重新登录成功
+	            	response.setStatus(201);//设置响应码
+	            }
+	        }
+			//System.out.println("out");
+		}else if(method.equals("1")) {//查询导航信息
 				try {
 					String username=request.getParameter("username");
-					System.out.println(username);
+					//System.out.println(username);
 					if(!(username.equals("null"))) {
 						List<Url> urls=webDao.QueryNavigations(username);
 						JSONObject json=new JSONObject();
@@ -80,6 +103,7 @@ public class UtilServlet extends HttpServlet {
 						}
 						json.put("navigation", jsonarr);
 						out.print(jsonarr.toString());
+						//System.out.println(jsonarr.toString());
 					}
 				} catch (JSONException e) {
 					// TODO 自动生成的 catch 块
@@ -133,25 +157,33 @@ public class UtilServlet extends HttpServlet {
 				}
 			}
 			out.print("<script>alert('修改导航成功');</script>");
-		}else if(method.equals("0")){//判断是否需要登录
-			boolean judge=false;//判断是否重新登录
-			Cookie[] cookies = request.getCookies();//获取所有cookies
-			if (cookies != null) {
-				//System.out.println("in");
-	            for (Cookie cookie : cookies) {
-	                if (URLDecoder.decode(cookie.getName(), "utf-8").equals("username")) { // 检查是否有用户信息
-	                	String username=URLDecoder.decode(cookie.getValue(), "utf-8");
-	                	HttpSession session=request.getSession();
-	        			session.setAttribute("username", username);
-	        			//System.out.println("用户重新登录成功"+username);
-	        			judge=true;
-	                }
-	            }
-	            if(!judge) {//如果没有重新登录成功
-	            	response.setStatus(201);//设置响应码
-	            }
-	        }
-			//System.out.println("out");
+		}else if(method.equals("5")){//添加推荐导航到数据库
+			String username=request.getParameter("username");
+			String filename=getServletContext().getRealPath("file/template.txt");
+			File file=new File(filename);
+			InputStreamReader in=new InputStreamReader(new FileInputStream(file), "utf-8");
+			BufferedReader br=new BufferedReader(in);
+			String temp=null;
+			StringBuffer sb=new StringBuffer();
+			temp=br.readLine();
+			while(temp!=null){//读取模板中的json内容
+				sb.append(temp);
+				temp=br.readLine();
+			}
+			try {
+				JSONArray jsonarry=new JSONArray(sb.toString());
+				for(int i=0;i<jsonarry.length();i++) {
+					String navigation=jsonarry.get(i).toString();
+					JSONObject json=new JSONObject(navigation);
+					int id=(int) json.get("id");
+					webDao.AddNavigation(username, id,navigation);
+				}
+				System.out.println("添加成功");
+			} catch (JSONException e) {
+				// TODO 自动生成的 catch 块
+				e.printStackTrace();
+			}
+			
 		}else {
 			out.print("<script>alert('请求参数错误');");
 		}

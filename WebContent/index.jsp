@@ -5,24 +5,9 @@
 <head>
 <meta charset="utf-8">
 <title>导航页</title>
-<style type="text/css">
-body{
-min-width: 700px;
-width: expression_r( document.body.clientWidth < 701 ? "700px" : "auto" );
-
-} 
-	.head{width:1024px; position:relative;top:20px; margin:auto}
-	.ball{width:540px; height:540px; position:relative; top:120px; background:url(pictures/bigball.png); background-size:cover; margin: 0 auto;}
-	.ball a{ display:block; position: absolute; right:20px;top:0px; opacity:1; color:#FFF;font-size:10px; background:url(pictures/littleBall.png) no-repeat center bottom;text-decoration:none; padding-bottom:25px; background-size:16px}
-	.lbox{width:50px; position:fixed;top:40%; left:10px; display:block;}
-	.lbox a {width: 50px;height: 50px;display: inline-block;background-color: #ddd;margin-bottom: 2px; opacity:0.5; transition: all 1s;;border-radius:10%; overflow:hidden;}
-	.lbox a:hover{ opacity:1;}
-	.lboc .main{width:50px; height:50px;}
-	.rbox{width:80px; position:fixed;top:30%; right:10px; display:block}
-	.rbox a {width: 80px;height: 80px;display: inline-block;background-color: #ddd;margin-bottom: 2px; opacity:0.5; transition: all 1s;;border-radius:10%; overflow:hidden;}
-	.rbox a:hover{ opacity:1}
-</style>
-<script type="text/javascript" src="run.js"></script>
+<link rel="stylesheet" type="text/css" href="css/index.css">
+<link rel="stylesheet" type="text/css" href="css/button.css">
+<script type="text/javascript" src="js/run.js"></script>
 <script>
 function loadXMLDoc(str)
 {
@@ -60,6 +45,7 @@ function loadXMLDoc(str)
 		    	  //document.getElementById(json[i].id).innerHTML=json[i].webName;
 		    	  //document.getElementById(json[i].id).href="http://"+json[i].url;
 		      }
+		    	document.getElementById("template").innerHTML="<a onclick='addtemplate()'><button class='small button'>添加模板</button></a>";
 		    }
 		  }
 		  xmlhttp.open("POST","UtilServlet",true);
@@ -116,6 +102,30 @@ function logout(){
 	  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	  xmlhttp.send("method=2");
 }
+function addtemplate(){
+	var str="<%=session.getAttribute("username") %>";
+	var xmlhttp;
+	if (window.XMLHttpRequest)
+	  {
+	    // IE7+, Firefox, Chrome, Opera, Safari æµè§å¨æ§è¡ä»£ç 
+	    xmlhttp=new XMLHttpRequest();
+	  }
+	  else
+	  {
+	    // IE6, IE5 æµè§å¨æ§è¡ä»£ç 
+	    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	  }
+		xmlhttp.onreadystatechange=function()
+	  {
+	    if (xmlhttp.readyState==4 && xmlhttp.status==200)
+	    {
+	    	window.location.href="index.jsp";
+	    }
+	  }
+	  xmlhttp.open("POST","UtilServlet",true);
+	  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	  xmlhttp.send("username="+str+"&method=5");
+}
 </script>
 </head>
 <body background="pictures/season0.jpg" id="body" class="content" onload="relogin()">
@@ -160,16 +170,37 @@ function logout(){
     <div style="position: absolute;top: 30px;right: 30px">
 		<%
 			username=session.getAttribute("username");
-			if(username==null){
-				out.print("你好，你还没有<a href=\"login.jsp\">登陆！</a><br/>");
-			}else{
+			if(username==null){//用户未登录
+				out.print("<ul class='button-group'>");
+				out.print("<li><a href='login.jsp'><button class='small button'>你好你还没有登录</button></a></li>");
+				out.print("<li><a href='login.jsp'><button class='small button'>登录</button></a></li>");
+				out.print("</ul>");
+			}else{//用户已登录
 				out.print("<script>loadXMLDoc("+"'"+username+"'"+");</script>");//为什么使用"'":因为调用js函数格式为loadXMLDoc('name');参数加单引号
-				out.print("欢迎您"+username);
-				out.print("|<a onclick=\"logout()\">注销</a><br/>");
-				out.print("<a href=\"navigation.jsp\">修改导航信息</a>");
+				
+				out.print("<ul class='button-group'>");
+				out.print("<li><button class='small button'>欢迎您"+username+"</button></li>");
+				out.print("<li><button onclick=\"logout()\" class='small button'>注销</button></li>");
+				out.print("</ul>");
+				
+				out.print("</br>");
+				out.print("<ul class='button-group'>");
+				out.print("<li><a href='navigation.jsp'><button class='small button'>修改导航信息</button></a></li>");
+				out.print("<li><div id='template'></div></li>");
+				out.print("</ul>");
 			}
 			
 		%>
+		<!-- <ul class="button-group">
+		<li><button class="small button">你好你还没有登录</button></li>
+		<li><a href="login.jsp"><button class="small button">登录</button></a></li>
+		</ul> -->
 	</div>
+	<div id="template"></div>
+	<div class="signup-footer">
+         <div class="pull-left">
+             &copy; 侧耳
+         </div>
+    </div>
 </body> 
 </html>
