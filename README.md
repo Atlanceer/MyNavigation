@@ -1,5 +1,5 @@
 # MyNavigation
-Java小项目，无聊做的一个导航网站Java后台，用户注册之后可以添加自己的导航，访问网址http://www.ceertingwen.xyz
+Java小项目，无聊做的一个导航网站Java后台，用户注册之后可以添加自己的导航，访问网址http://ceertingwen.xyz
 主要功能：
   首页的星球绕行系统用js实现（多个椭圆轨迹）
   提供注册服务，登录服务（选择手机号登录或者用户名登录）
